@@ -1,0 +1,94 @@
+{% extends "core/base.html" %}
+{% block title %}Dashboard - Timesheet Flow{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <div class="page-title">Hi {{ user.username }}, here's your month</div>
+      <div class="small">Track hours, see earnings, and jump into any timesheet.</div>
+    </div>
+    {% if current_ts %}
+      <a href="{% url 'timesheet_detail' current_ts.pk %}">
+        <button class="btn btn-primary">Go to current month ➜</button>
+      </a>
+    {% else %}
+      <a href="{% url 'timesheet_create' %}">
+        <button class="btn btn-primary">Create this month’s timesheet ➜</button>
+      </a>
+    {% endif %}
+  </div>
+
+  <div class="grid grid-3">
+    <div>
+      <div class="stat-label">Hourly Rate</div>
+      <div class="stat-value">{{ profile.hourly_rate }} QAR</div>
+      <div class="small">Editable in <a href="{% url 'profile' %}">Hourly Rate</a>.</div>
+    </div>
+    <div>
+      <div class="stat-label">This Month Earnings</div>
+      <div class="stat-value">{{ this_month_total|floatformat:2 }} QAR</div>
+      <div class="small">Based on all entries this month.</div>
+    </div>
+    <div>
+      <div class="stat-label">Avg Hours / Active Day</div>
+      <div class="stat-value">{{ avg_hours|floatformat:2 }} h</div>
+      <div class="small">Across all timesheets.</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-2">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Recent Timesheets</div>
+      <span class="pill">History</span>
+    </div>
+    {% if timesheets %}
+      <table>
+        <thead>
+          <tr>
+            <th>Month</th>
+            <th>Total Hours</th>
+            <th>Total Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ts in timesheets %}
+          <tr class="{% if ts.total_hours >= 160 %}row-strong{% elif ts.total_hours >= 80 %}row-mid{% else %}row-low{% endif %}">
+            <td>{{ ts.month }}/{{ ts.year }}</td>
+            <td>{{ ts.total_hours|floatformat:2 }}</td>
+            <td>{{ ts.total_amount|floatformat:2 }} QAR</td>
+            <td>
+              <a href="{% url 'timesheet_detail' ts.pk %}">
+                <button class="btn btn-outline" type="button">Open</button>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="small">No timesheets yet. Create your first one.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Quick Actions</div>
+    </div>
+    <p class="small">Create, review, and export your timesheets.</p>
+    <div style="display:flex; flex-direction:column; gap:0.5rem;">
+      <a href="{% url 'timesheet_create' %}">
+        <button class="btn btn-primary" type="button">➕ New Timesheet</button>
+      </a>
+      <a href="{% url 'timesheet_list' %}">
+        <button class="btn btn-outline" type="button">📚 View All Timesheets</button>
+      </a>
+      <a href="{% url 'profile' %}">
+        <button class="btn btn-outline" type="button">⚙️ Update Hourly Rate</button>
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

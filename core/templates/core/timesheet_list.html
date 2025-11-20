@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+{% block title %}Timesheets - Timesheet Flow{% endblock %}
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div class="page-title">All Timesheets</div>
+    <a href="{% url 'timesheet_create' %}">
+      <button class="btn btn-primary" type="button">➕ New Timesheet</button>
+    </a>
+  </div>
+  {% if timesheets %}
+    <table>
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Total Hours</th>
+          <th>Total Amount</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ts in timesheets %}
+        <tr class="{% if ts.total_hours >= 160 %}row-strong{% elif ts.total_hours >= 80 %}row-mid{% else %}row-low{% endif %}">
+          <td>{{ ts.month }}/{{ ts.year }}</td>
+          <td>{{ ts.total_hours|floatformat:2 }}</td>
+          <td>{{ ts.total_amount|floatformat:2 }} QAR</td>
+          <td class="small">{{ ts.created_at|date:"Y-m-d H:i" }}</td>
+          <td>
+            <a href="{% url 'timesheet_detail' ts.pk %}">
+              <button class="btn btn-outline" type="button">Open</button>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="small">No timesheets yet. Create your first one.</p>
+  {% endif %}
+</div>
+{% endblock %}
